@@ -1,0 +1,116 @@
+import time
+
+def show_menu():
+    print("\n--- EMPANADA MENU ---")
+    print("1. Beef Empanada     - ₱35")
+    print("2. Chicken Empanada  - ₱30")
+    print("3. Cheese Empanada   - ₱25")
+    print("4. Veggie Empanada   - ₱28")
+    print("5. Exit and Checkout")
+
+def get_price(choice):
+    menu = {
+        1: (35, "Beef Empanada"),
+        2: (30, "Chicken Empanada"),
+        3: (25, "Cheese Empanada"),
+        4: (28, "Veggie Empanada")
+    }
+    return menu.get(choice, (0, ""))
+
+def take_order():
+    order_list = []
+    total = 0
+
+    while True:
+        show_menu()
+        try:
+            choice = int(input("Select your order (1-5): "))
+            if choice == 5:
+                break
+            elif 1 <= choice <= 4:
+                qty = int(input("Enter quantity: "))
+                if qty <= 0:
+                    print("Quantity must be more than zero.")
+                    continue
+                price, name = get_price(choice)
+                subtotal = price * qty
+                total += subtotal
+                order_list.append((name, qty, subtotal))
+                print(f"Added {qty} x {name} - Subtotal: ₱{subtotal}")
+            else:
+                print("Invalid choice. Please select a number between 1-5.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    return order_list, total
+
+def choose_delivery_option():
+    print("\n--- DELIVERY OPTIONS ---")
+    print("1. Pick-up")
+    print("2. Delivery (Additional ₱20 fee)")
+    while True:
+        try:
+            option = int(input("Choose an option (1 or 2): "))
+            if option == 1:
+                return "Pick-up", 0
+            elif option == 2:
+                return "Delivery", 20
+            else:
+                print("Please select 1 or 2.")
+        except ValueError:
+            print("Invalid input. Enter a number.")
+
+def process_payment(total):
+    while True:
+        try:
+            payment = float(input(f"Enter payment amount (Total ₱{total}): ₱"))
+            if payment >= total:
+                change = payment - total
+                print(f"Payment accepted. Your change is ₱{change:.2f}")
+                return True
+            else:
+                print("Insufficient amount. Please pay the full total.")
+        except ValueError:
+            print("Enter a valid amount.")
+
+def print_receipt(order_list, total, delivery_type, delivery_fee):
+    print("\n=== RECEIPT ===")
+    for item in order_list:
+        print(f"{item[1]} x {item[0]} - ₱{item[2]}")
+    print(f"Delivery Option: {delivery_type}")
+    print(f"Delivery Fee: ₱{delivery_fee}")
+    print(f"Total Amount Paid: ₱{total}")
+    print("Thank you for ordering at Empanada Delight!")
+    print("========================\n")
+
+def main():
+    print("Welcome to EMPANADA DELIGHT - Your Favorite Empanada Corner!")
+
+    while True:
+        name = input("\nEnter your name: ").strip().title()
+        print(f"Hello {name}, let's take your order!")
+
+        order_list, subtotal = take_order()
+        if not order_list:
+            print("No orders placed.")
+            continue
+
+        delivery_type, delivery_fee = choose_delivery_option()
+        grand_total = subtotal + delivery_fee
+
+        print(f"\nOrder Total: ₱{subtotal}")
+        print(f"Delivery Fee: ₱{delivery_fee}")
+        print(f"Grand Total: ₱{grand_total}")
+
+        if process_payment(grand_total):
+            print("Processing your receipt...")
+            time.sleep(2)
+            print_receipt(order_list, grand_total, delivery_type, delivery_fee)
+
+        more = input("Would you like to serve another customer? (yes/no): ").strip().lower()
+        if more != "yes":
+            print("Store closed. Have a great day!")
+            break
+
+if __name__ == "__main__":
+    main()
